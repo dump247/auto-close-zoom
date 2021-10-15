@@ -9,7 +9,13 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
   if (url.hash === '#success') {
     console.info(`Closing successful zoom tab`, { url, tabId, hash: url.hash });
-    browser.tabs.remove(tabId);
+
+    browser.tabs.remove(tabId).catch((error) => {
+      // Invalid tab id means the tab was already closed.
+      if (!error.message.startsWith(`Invalid tab ID`)) {
+        console.error(`Error closing zoom tab`, { url, tabId, hash: url.hash, error });
+      }
+    });
   }
 });
 
